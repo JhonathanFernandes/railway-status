@@ -2,6 +2,7 @@ name: Railway Monitor
 
 on:
   workflow_dispatch:
+
   schedule:
     - cron: "*/5 * * * *"
 
@@ -12,9 +13,11 @@ jobs:
     steps:
       - name: Check Railway Status
         run: |
-          STATUS=$(curl -s https://status.railway.com/api/v2/status.json | jq -r '.status.description')
+          STATUS=$(curl -s https://status.railway.com/api/v2/status.json)
 
-          if [[ "$STATUS" == "All Systems Operational" ]]; then
+          echo "$STATUS"
+
+          if echo "$STATUS" | grep -q "All Systems Operational"; then
             curl -H "Title: Railway OK" \
                  -H "Priority: urgent" \
                  -d "Railway voltou ao normal." \
