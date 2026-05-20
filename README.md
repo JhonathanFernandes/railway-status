@@ -1,1 +1,23 @@
-# railway-status
+name: Railway Monitor
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "*/5 * * * *"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Railway Status
+        run: |
+          STATUS=$(curl -s https://status.railway.com/api/v2/status.json | jq -r '.status.description')
+
+          if [[ "$STATUS" == "All Systems Operational" ]]; then
+            curl -H "Title: Railway OK" \
+              -H "Priority: urgent" \
+              -d "Railway voltou ao normal." \
+              https://ntfy.sh/status-railway
+          fi
